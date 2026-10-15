@@ -15,8 +15,6 @@ const DEFAULTS = {
   sysbars: true,
   bezel: true,
   ua: true,
-  slow: false,
-  suffix: 'enter',
   custom: []
 };
 
@@ -83,12 +81,12 @@ function keypad(d) {
   for (const [k, cls] of keys) {
     const b = el('button', cls || '', esc(k));
     b.type = 'button';
+    b.addEventListener('mousedown', (e) => e.preventDefault());
     b.addEventListener('click', () => {
       setActive(d.id);
-      if (k === 'SCAN') return doScan();
       if (k === 'ENT') return sendToDevice(d.id, '', 'enter');
       if (k === 'TAB') return sendToDevice(d.id, '', 'tab');
-      if (k === '⌫' || k === 'F1' || k === 'F2') return toast(`${k} tuşu simüle edilmiyor`);
+      if (k === '⌫' || k === 'SCAN' || k === 'F1' || k === 'F2') return toast(`${k} tuşu simüle edilmiyor`);
       sendToDevice(d.id, k, 'none', true);
     });
     kp.append(b);
@@ -222,29 +220,20 @@ function render() {
 
   if (!state.url) {
     stage.append(el('div', 'empty', 'Test etmek istediğiniz adresi yukarıya yazıp <b>Aç</b>\'a basın. İpucu: sitenizdeyken eklenti ikonuna tıklarsanız adres otomatik gelir.'));
-    updateTarget();
     return;
   }
   const list = state.selected.map(findDevice).filter(Boolean);
   if (!list.length) {
     stage.append(el('div', 'empty', '<b>Cihazlar</b> menüsünden en az bir terminal seçin.'));
-    updateTarget();
     return;
   }
   if (!list.some((d) => d.id === activeId)) activeId = list[0].id;
   for (const d of list) stage.append(deviceCard(d));
-  updateTarget();
 }
 
 function setActive(id) {
   activeId = id;
   document.querySelectorAll('.device').forEach((x) => x.classList.toggle('active', x.dataset.id === id));
-  updateTarget();
-}
-
-function updateTarget() {
-  const d = activeId && findDevice(activeId);
-  $('#target').textContent = d ? `Hedef: ${d.brand} ${d.model}` : '';
 }
 
 // Bir iframe'e tıklanınca onu tarama hedefi yap
@@ -272,7 +261,7 @@ function sendToDevice(id, code, suffix, quiet = false) {
       pending.delete(nonce);
       if (!quiet) toast('Sayfaya ulaşılamadı. Sayfa yüklenmemiş olabilir ya da eklentinin sitede çalışma izni yok.', 'err');
       resolve(null);
-    }, 1500 + (state.slow ? code.length * 20 : 0));
+    }, 1500);
     pending.set(nonce, (ack) => {
       clearTimeout(timer);
       if (!quiet || !ack.ok) {
@@ -281,22 +270,8 @@ function sendToDevice(id, code, suffix, quiet = false) {
       }
       resolve(ack);
     });
-    f.contentWindow.postMessage({ __hhsim: 'scan', nonce, code, suffix, delay: state.slow ? 15 : 0 }, '*');
+    f.contentWindow.postMessage({ __hhsim: 'scan', nonce, code, suffix, delay: 0 }, '*');
   });
-}
-
-function doScan(code) {
-  code = code ?? $('#code').value;
-  if (!code) { toast('Okutulacak barkod içeriğini yazın.'); $('#code').focus(); return; }
-  if (!activeId) { toast('Önce bir cihaz seçin.'); return; }
-  return sendToDevice(activeId, code, state.suffix);
-}
-
-function randomEan13() {
-  let s = '869';
-  while (s.length < 12) s += Math.floor(Math.random() * 10);
-  const sum = [...s].reduce((a, c, i) => a + (+c) * (i % 2 ? 3 : 1), 0);
-  return s + ((10 - (sum % 10)) % 10);
 }
 
 function normalizeUrl(v) {
@@ -349,8 +324,6 @@ function syncControls() {
   $('#sysbars').checked = state.sysbars;
   $('#bezel').checked = state.bezel;
   $('#ua').checked = state.ua;
-  $('#slow').checked = state.slow;
-  $('#suffix').value = state.suffix;
   $('#rotate').textContent = state.landscape ? '⤾ Yatay' : '⤾ Dikey';
 }
 
@@ -368,12 +341,6 @@ function bindControls() {
   $('#sysbars').addEventListener('change', (e) => { state.sysbars = e.target.checked; save(); render(); });
   $('#bezel').addEventListener('change', (e) => { state.bezel = e.target.checked; save(); render(); });
   $('#ua').addEventListener('change', async (e) => { state.ua = e.target.checked; save(); await applyNetwork(); render(); });
-  $('#slow').addEventListener('change', (e) => { state.slow = e.target.checked; save(); });
-  $('#suffix').addEventListener('change', (e) => { state.suffix = e.target.value; save(); });
-
-  $('#scan').addEventListener('click', () => doScan());
-  $('#code').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); doScan(); } });
-  $('#randEan').addEventListener('click', () => { const c = randomEan13(); $('#code').value = c; doScan(c); });
 
   $('#devicesBtn').addEventListener('click', () => { $('#panel').hidden = !$('#panel').hidden; });
   $('#closePanel').addEventListener('click', () => { $('#panel').hidden = true; });

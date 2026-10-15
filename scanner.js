@@ -91,6 +91,12 @@
     keyEvent('keyup', 'Tab', el);
   }
 
+  let lastEditable = null;
+  document.addEventListener('focusin', (e) => {
+    const t = e.composedPath()[0];
+    if (isEditable(t)) lastEditable = t;
+  }, true);
+
   function describe(el) {
     const label = el.name || el.id || el.placeholder || el.getAttribute('aria-label') || el.tagName.toLowerCase();
     return String(label).slice(0, 40);
@@ -104,7 +110,8 @@
       try { e.source.postMessage({ __hhsim: 'scan-ack', nonce: d.nonce, ok, info }, e.origin); } catch (_) {}
     };
 
-    const el = deepActive(document);
+    let el = deepActive(document);
+    if (!isEditable(el) && lastEditable && lastEditable.isConnected && isEditable(lastEditable)) el = lastEditable;
     if (!isEditable(el)) {
       // Odakta alan yoksa yine de tuş olaylarını document'a gönder (global klavye dinleyen uygulamalar için)
       if (d.code) for (const ch of d.code) { keyEvent('keydown', ch, document.body); keyEvent('keypress', ch, document.body); keyEvent('keyup', ch, document.body); }

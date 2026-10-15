@@ -26,8 +26,7 @@ Edge'de de aynı şekilde çalışır (`edge://extensions`).
 DataWedge / keyboard wedge gibi çalışır: odaktaki alana karakterleri klavye olaylarıyla
 (`keydown`/`keypress`/`input`/`keyup`, `keyCode` dahil) yazar, ardından **Enter**, **Tab** veya sonek göndermez.
 1. Cihaz ekranında giriş alanına tıklayın (o cihaz turuncu "tarama hedefi" olur).
-2. Barkod kutusuna yazıp Enter'a basın ya da **Tara** / **Rastgele EAN-13** (869 önekli, geçerli kontrol haneli).
-3. Tuş takımlı cihazlarda çerçeve açıkken tuşlar tıklanabilir: rakamlar yazılır, `ENT` Enter, `SCAN` barkod kutusundakini okutur.
+2. Tuş takımlı cihazlarda çerçeve açıkken tuşlar tıklanabilir: rakamlar yazılır, `ENT` Enter, `TAB` Tab gönderir.
 
 ## Sınırlar
 - Sayfanın içinde CSS medya sorguları (`width`, `orientation`) doğru çalışır. `resolution`/`-webkit-device-pixel-ratio`

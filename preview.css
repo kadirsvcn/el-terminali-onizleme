@@ -12,17 +12,14 @@
 body { margin: 0; background: var(--bg); color: var(--text); font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
 
 .top { position: sticky; top: 0; z-index: 5; }
-.bar, .scanbar {
+.bar {
   display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
   padding: 8px 14px; background: var(--panel); border-bottom: 1px solid var(--line);
 }
-.scanbar { background: var(--panel2); }
 .brand { display: flex; align-items: center; gap: 8px; font-weight: 600; margin-right: 6px; white-space: nowrap; }
 .brand img { width: 20px; height: 20px; }
 .url { display: flex; gap: 6px; flex: 1 1 320px; }
 .url input { flex: 1; }
-.scanlabel { font-weight: 600; color: var(--acc); }
-#code { width: 280px; font-family: ui-monospace, Consolas, monospace; }
 
 input, select, button {
   font: inherit; color: var(--text); background: #0d0f13;
