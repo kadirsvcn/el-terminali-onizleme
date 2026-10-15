@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>El Terminali Önizleyici</title>
+  <link rel="icon" href="icons/icon32.png">
+  <link rel="stylesheet" href="preview.css">
+</head>
+<body>
+  <div class="top">
+    <header class="bar">
+      <div class="brand"><img src="icons/icon32.png" alt=""> El Terminali Önizleyici</div>
+      <form id="urlForm" class="url">
+        <input id="url" type="text" placeholder="https://siteniz.com veya http://192.168.1.10:8080" spellcheck="false">
+        <button type="submit" class="primary">Aç</button>
+      </form>
+      <button id="reload" title="Tüm cihazları yenile">⟳ Yenile</button>
+      <button id="rotate" title="Yatay / dikey">⤾ Dikey</button>
+      <select id="zoom" title="Yakınlaştırma">
+        <option value="0.5">%50</option><option value="0.67">%67</option><option value="0.75">%75</option>
+        <option value="0.9">%90</option><option value="1">%100</option><option value="1.25">%125</option><option value="1.5">%150</option>
+      </select>
+      <label class="tg" title="Android durum çubuğu (24px) ve gezinme çubuğu (48px) viewport'tan düşülür"><input type="checkbox" id="sysbars"> Sistem çubukları</label>
+      <label class="tg"><input type="checkbox" id="bezel"> Cihaz çerçevesi</label>
+      <label class="tg" title="Sunucuya ve sayfa JavaScript'ine Android cihaz User-Agent'ı gösterir"><input type="checkbox" id="ua"> Android UA</label>
+      <button id="devicesBtn">Cihazlar (<span id="count">0</span>)</button>
+    </header>
+    <div class="scanbar">
+      <span class="scanlabel">Barkod okut</span>
+      <input id="code" placeholder="Barkod / QR içeriği — Enter ile okut" autocomplete="off" spellcheck="false">
+      <select id="suffix">
+        <option value="enter">+ Enter</option>
+        <option value="tab">+ Tab</option>
+        <option value="none">Sonek yok</option>
+      </select>
+      <label class="tg" title="Gerçek okuyucu gibi karakterleri 15 ms arayla yazar"><input type="checkbox" id="slow"> Karakter karakter</label>
+      <button id="scan" class="primary">▮▯▮ Tara</button>
+      <button id="randEan" title="869 (Türkiye) önekli geçerli EAN-13 üretip okutur">Rastgele EAN-13</button>
+      <span id="target" class="muted"></span>
+    </div>
+  </div>
+
+  <main id="stage"></main>
+
+  <aside id="panel" hidden>
+    <div class="panel-head">
+      <h2>Cihazlar</h2>
+      <button id="closePanel" title="Kapat">✕</button>
+    </div>
+    <div class="panel-actions">
+      <button id="selAll">Tümünü seç</button>
+      <button id="selNone">Temizle</button>
+    </div>
+    <div id="deviceList"></div>
+
+    <h3>Özel cihaz ekle</h3>
+    <form id="customForm" class="custom">
+      <input name="brand" placeholder="Marka" required>
+      <input name="model" placeholder="Model" required>
+      <div class="grid3">
+        <label>Genişlik (CSS px)<input name="w" type="number" min="200" max="2000" value="360" required></label>
+        <label>Yükseklik (CSS px)<input name="h" type="number" min="200" max="3000" value="640" required></label>
+        <label>DPR<input name="dpr" type="number" min="1" max="4" step="0.25" value="2" required></label>
+      </div>
+      <div class="grid3">
+        <label>İnç<input name="inch" type="number" min="2" max="12" step="0.1" value="5"></label>
+        <label class="tg"><input name="nav" type="checkbox" checked> Ekran gezinme çubuğu</label>
+        <label class="tg"><input name="keypad" type="checkbox"> Tuş takımı</label>
+      </div>
+      <p class="hint">CSS px = fiziksel çözünürlük ÷ DPR. Örn. 720×1280 ekran, DPR 2 → 360×640.</p>
+      <button type="submit" class="primary">Ekle</button>
+    </form>
+  </aside>
+
+  <div id="toast"></div>
+
+  <script src="devices.js"></script>
+  <script src="preview.js"></script>
+</body>
+</html>
